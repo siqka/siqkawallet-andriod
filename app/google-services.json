@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "487402542342",
+    "project_id": "siqka-5c059",
+    "storage_bucket": "siqka-5c059.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:487402542342:android:2f25367ea472ace64dfa87",
+        "android_client_info": {
+          "package_name": "io.soundtechfilm.siqka"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "487402542342-8bl83qb76dqg0051qbpo51hljff90fv4.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAoWky9Hwh7p2mOdBzQrnQj1LUiLh4uVZg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "487402542342-8bl83qb76dqg0051qbpo51hljff90fv4.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

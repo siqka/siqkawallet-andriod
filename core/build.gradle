@@ -1,0 +1,46 @@
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
+
+android {
+    compileSdkVersion compile_sdk_version
+    buildToolsVersion build_tools_version
+
+    defaultConfig {
+        minSdkVersion min_sdk_version
+        targetSdkVersion compile_sdk_version
+
+        consumerProguardFiles 'consumer-rules.pro'
+        vectorDrawables.useSupportLibrary = true
+    }
+
+    buildTypes {
+        debug {
+            minifyEnabled false
+        }
+        release {
+            minifyEnabled false
+        }
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    implementation "androidx.appcompat:appcompat:$appcompat_version"
+    implementation "androidx.constraintlayout:constraintlayout:$constraint_version"
+    implementation "androidx.core:core-ktx:$core_ktx_version"
+
+    implementation "androidx.fragment:fragment-ktx:$fragment_ktx_version"
+    // Navigation component
+    api "androidx.navigation:navigation-fragment-ktx:$navigation_ktx_version"
+    api "androidx.navigation:navigation-ui-ktx:$navigation_ktx_version"
+
+    implementation "io.reactivex.rxjava2:rxjava:$rxjava_version"
+    implementation "androidx.biometric:biometric:$biometric_version"
+    implementation "com.google.android.material:material:$material_version"
+    implementation project(':components:views')
+    implementation project(':components:snackbar')
+
+    testImplementation "junit:junit:$junit_version"
+}

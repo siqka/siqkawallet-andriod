@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/menuFavorite"
+        android:icon="@drawable/ic_rate_24"
+        android:iconTint="@color/grey"
+        android:title="@string/CoinPage_Favorite"
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/menuUnfavorite"
+        android:icon="@drawable/ic_rate_24"
+        app:iconTint="@color/jacob"
+        android:title="@string/CoinPage_Unfavorite"
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/menuNotification"
+        android:icon="@drawable/ic_notification_24"
+        android:title="@string/Settings_Notifications"
+        app:showAsAction="always" />
+
+</menu>

@@ -1,0 +1,258 @@
+apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-kapt'
+apply plugin: 'com.google.gms.google-services'
+
+androidExtensions {
+    experimental = true
+}
+
+def computeVersionCode() {
+    ext.buildNumber = System.getenv("BUILD_NUMBER") ?: 41
+    return "$buildNumber".toInteger()
+}
+
+android {
+    compileSdkVersion compile_sdk_version
+    buildToolsVersion build_tools_version
+
+    defaultConfig {
+        applicationId 'io.soundtechfilm.siqka'
+        minSdkVersion min_sdk_version
+        targetSdkVersion compile_sdk_version
+        versionCode computeVersionCode()
+        versionName "0.10.0"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+        kapt {
+            arguments {
+                arg("room.schemaLocation", "$projectDir/schemas".toString())
+                arg("room.incremental", true)
+            }
+        }
+        vectorDrawables.useSupportLibrary = true
+        lintOptions {
+            checkReleaseBuilds false
+        }
+    }
+
+    signingConfigs {
+        appCenter {
+            storeFile file("./test.keystore")
+            storePassword "testKeystore123"
+
+            keyAlias "testKeystore"
+            keyPassword "testKeystore123"
+        }
+    }
+
+    buildTypes {
+        debug {
+            debuggable true
+            minifyEnabled false
+            applicationIdSuffix ".dev"
+            buildConfigField "boolean", "testMode", "false"
+            buildConfigField "boolean", "skipRootCheck", "true"
+            resValue "string", "cryptoCompareApiKey", "2b08fe1dba559ca6acf5e1897b6de8749cee0ace6052d7aa7fccf6aa9f1b3255"
+            resValue "string", "uniswapGraphUrl", "https://api.thegraph.com/subgraphs/name/uniswap/uniswap-v2"
+            resValue "string", "infuraProjectId", "2a1306f1d12f4c109a4d4fb9be46b02e"
+            resValue "string", "infuraSecretKey", "fc479a9290b64a84a15fa6544a130218"
+            resValue "string", "etherscanKey", "GKNHXT22ED7PRVCKZATFZQD1YI7FK9AAYE"
+            resValue "string", "bscscanKey", "5ZGSHWYHZVA8XZHB8PF6UUTRNNB4KT43ZZ"
+            resValue "string", "is_release", "false"
+            resValue "string", "guidesUrl", "https://siqka.com/privacy"
+            resValue "string", "faqUrl", "https://siqka.com/terms-conditions/"
+        }
+
+        apptestnet {
+            initWith debug
+            applicationIdSuffix ".dev.testnet"
+            buildConfigField "boolean", "testMode", "true"
+            matchingFallbacks = ['debug']
+        }
+
+        appcenter {
+            initWith debug
+            applicationIdSuffix ".dev.appcenter"
+            buildConfigField "boolean", "skipRootCheck", "false"
+            signingConfig signingConfigs.appCenter
+            matchingFallbacks = ['debug']
+        }
+
+        release {
+            debuggable false
+            minifyEnabled false
+            buildConfigField "boolean", "testMode", "false"
+            buildConfigField "boolean", "skipRootCheck", "false"
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            resValue "string", "cryptoCompareApiKey", ""
+            resValue "string", "uniswapGraphUrl", "https://api.thegraph.com/subgraphs/name/uniswap/uniswap-v2"
+            resValue "string", "infuraProjectId", "5bf760228fcd47bb8d277dba49b7b369"
+            resValue "string", "infuraSecretKey", "7b81c992c98d4e60aaa8a0ef9acff2be"
+            resValue "string", "etherscanKey", "TTH1114D5VD5ZMCJZ4B74SGIDRCGSKWGX9"
+            resValue "string", "bscscanKey", "5ZGSHWYHZVA8XZHB8PF6UUTRNNB4KT43ZZ"
+            resValue "string", "is_release", "true"
+            resValue "string", "guidesUrl", "https://raw.githubusercontent.com/horizontalsystems/blockchain-crypto-guides/v1.1/index.json"
+            resValue "string", "faqUrl", "https://raw.githubusercontent.com/horizontalsystems/Unstoppable-Wallet-Website/v1.0/src/faq_android.json"
+        }
+
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    packagingOptions {
+        pickFirst("META-INF/atomicfu.kotlin_module")
+    }
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+}
+
+dependencies {
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    implementation "androidx.appcompat:appcompat:$appcompat_version"
+    implementation "androidx.constraintlayout:constraintlayout:$constraint_version"
+    implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
+
+    implementation "androidx.lifecycle:lifecycle-viewmodel:$lifecycle_version"
+    // use -ktx for Kotlin
+    // alternatively - just LiveData
+    implementation "androidx.lifecycle:lifecycle-livedata:$lifecycle_version"
+    // alternatively - Lifecycles only (no ViewModel or LiveData).
+    //     Support library depends on this lightweight import
+    implementation "androidx.lifecycle:lifecycle-runtime:$lifecycle_version"
+    implementation "androidx.lifecycle:lifecycle-common-java8:$lifecycle_version"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version"
+    implementation "androidx.fragment:fragment-ktx:$fragment_ktx_version"
+    implementation "androidx.preference:preference-ktx:1.1.1"
+    implementation "androidx.browser:browser:1.3.0"
+    implementation platform('com.google.firebase:firebase-bom:28.2.0')
+    implementation 'com.google.firebase:firebase-analytics-ktx'
+    implementation 'com.google.firebase:firebase-messaging:9.2.1'
+
+    // Room
+    def room_version = '2.2.6'
+    implementation "androidx.room:room-runtime:$room_version"
+    implementation "androidx.room:room-rxjava2:$room_version"
+    kapt "androidx.room:room-compiler:$room_version"
+    // alternately - if using Java8, use the following instead of compiler
+    implementation "androidx.lifecycle:lifecycle-common-java8:$lifecycle_version"
+    // optional - ReactiveStreams support for LiveData
+    implementation "androidx.lifecycle:lifecycle-reactivestreams:$lifecycle_version"
+
+    implementation 'androidx.recyclerview:recyclerview:1.2.0-beta01'
+
+    implementation "com.google.android.material:material:$material_version"
+
+    implementation 'io.reactivex.rxjava2:rxandroid:2.1.1'
+    // Because RxAndroid releases are few and far between, it is recommended you also
+    // explicitly depend on RxJava's latest version for bug fixes and new features.
+    // (see https://github.com/ReactiveX/RxJava/releases for latest 2.x.x version)
+    implementation "io.reactivex.rxjava2:rxjava:$rxjava_version"
+    implementation 'com.squareup.retrofit2:retrofit:2.9.0'
+    implementation 'com.squareup.retrofit2:adapter-rxjava2:2.8.1'
+    implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
+    implementation 'com.squareup.retrofit2:converter-scalars:2.9.0'
+    implementation 'com.squareup.okhttp3:logging-interceptor:4.7.2'
+    implementation 'com.google.code.gson:gson:2.8.6'
+    implementation "androidx.biometric:biometric:$biometric_version"
+
+    implementation 'com.squareup.picasso:picasso:2.71828'
+
+    implementation 'com.atlassian.commonmark:commonmark:0.15.1'
+
+    // ViewPager circle indicator
+    implementation 'me.relex:circleindicator:2.1.4'
+
+    //Custom tabs, chrome
+    implementation "androidx.browser:browser:1.3.0"
+
+    // Navigation component
+    implementation "androidx.navigation:navigation-fragment-ktx:$navigation_ktx_version"
+    implementation "androidx.navigation:navigation-ui-ktx:$navigation_ktx_version"
+
+    api 'com.journeyapps:zxing-android-embedded:4.1.0'
+
+    // WorkManager Kotlin
+    def work_version = "2.5.0"
+    implementation "androidx.work:work-runtime-ktx:$work_version"
+    // WorkManager RxJava2 support
+    implementation "androidx.work:work-rxjava2:$work_version"
+
+   /* def leakCanary = 'com.squareup.leakcanary:leakcanary-android:2.5'
+    appcenterImplementation leakCanary
+    apptestnetImplementation leakCanary
+    debugImplementation leakCanary*/
+
+    //permission
+    implementation 'pub.devrel:easypermissions:3.0.0'
+
+    // Wallet kits
+    implementation 'com.github.horizontalsystems:bitcoin-kit-android:10d9d2c'
+    implementation 'com.github.horizontalsystems:ethereum-kit-android:419fd59'
+    implementation 'com.github.horizontalsystems:blockchain-fee-rate-kit-android:047596b'
+    implementation 'com.github.horizontalsystems:binance-chain-kit-android:b9e1b11'
+    implementation 'com.github.horizontalsystems:xrates-kit-android:337b3ac'
+
+
+    //Zcash SDK
+    def zcashVersion = "1.2.1-beta04"
+    def zcashDependencyMainNet = "cash.z.ecc.android:zcash-android-sdk-mainnet:$zcashVersion"
+    def zcashDependencyTestNet = "cash.z.ecc.android:zcash-android-sdk-testnet:$zcashVersion"
+    releaseImplementation zcashDependencyMainNet
+    appcenterImplementation zcashDependencyMainNet
+    apptestnetImplementation zcashDependencyTestNet
+    debugImplementation zcashDependencyMainNet
+
+    // WalletConnect
+    implementation 'com.github.horizontalsystems:wallet-connect-kotlin:71984f2'
+    implementation 'com.squareup.okhttp3:okhttp:4.9.0'
+
+    // Unstoppable Domains
+    implementation 'com.unstoppabledomains:resolution:1.9.1'
+
+    // in case native file tor.so not loading, do full gradle clean and build.
+    implementation 'com.github.horizontalsystems:tor-kit-android:2f1bdeb'
+
+    // UI modules
+
+    implementation project(':core')
+    implementation project(':components:views')
+    implementation project(':components:snackbar')
+    implementation project(':components:icons')
+    implementation project(':components:chartview')
+    implementation project(':components:languageswitcher')
+    implementation project(':components:currencyswitcher')
+    implementation project(':components:keystore')
+    implementation project(':components:pin')
+    implementation project(':components:seekbar')
+
+    androidTestImplementation 'androidx.test:runner:1.4.0-alpha04'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0-alpha04'
+
+    // optional - Test helpers for LiveData
+    testImplementation "junit:junit:$junit_version"
+    testImplementation "androidx.arch.core:core-testing:2.1.0"
+    testImplementation "org.mockito:mockito-core:3.3.3"
+    testImplementation 'com.nhaarman:mockito-kotlin-kt1.1:1.6.0'
+    testImplementation 'org.powermock:powermock-api-mockito2:2.0.7'
+    testImplementation 'org.powermock:powermock-module-junit4:2.0.7'
+
+    // Spek
+    testImplementation "org.spekframework.spek2:spek-dsl-jvm:2.0.9"
+    testRuntimeOnly "org.spekframework.spek2:spek-runner-junit5:2.0.9"
+    testRuntimeOnly "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
+}
+
+configurations.all {
+    resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
+}
+
+// build.gradle in the app module
+dependencies {
+
+    implementation project(path: ':kmmsharedmodule')
+}
